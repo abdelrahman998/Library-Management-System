@@ -24,16 +24,19 @@ This project is a Library Management System built with Java, Spring Boot, and a 
 ## 🚀 Getting Started
 
 1. **Clone and setup**
+
    ```bash  
    git clone [(https://github.com/abdelrahman998/Library-Management-System.git)]  
    cd Library-Management-System
    ```
 2. **Create the database**
 Make sure MySQL is running, then create the database manually:
+
    ```SQL
    CREATE DATABASE library_db;
    ```
 3. **Configure the database** Create or update src/main/resources/application.properties
+   
 ```properties
 # Server Configuration
 server.port=8080
@@ -51,6 +54,7 @@ spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 ```
 4. **Run the application**
+   
    ```bash
    mvn clean install
    mvn spring-boot:run
