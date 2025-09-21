@@ -2,19 +2,28 @@ package com.library.mapper;
 
 import com.library.dto.BorrowingResponse;
 import com.library.entity.BorrowingTransaction;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring",
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-public interface BorrowingMapper {
-    BorrowingMapper INSTANCE = Mappers.getMapper(BorrowingMapper.class);
-
-    @Mapping(target = "bookId", source = "book.id")
-    @Mapping(target = "memberId", source = "member.id")
-    @Mapping(target = "issuedById", source = "issuedBy.id")
-    @Mapping(target = "returnedToId", source = "returnedTo.id")
-    BorrowingResponse toResponse(BorrowingTransaction transaction);
+@Component
+public class BorrowingMapper {
+    
+    public BorrowingResponse toResponse(BorrowingTransaction transaction) {
+        if (transaction == null) {
+            return null;
+        }
+        
+        return BorrowingResponse.builder()
+                .id(transaction.getId())
+                .bookId(transaction.getBook() != null ? transaction.getBook().getId() : null)
+                .memberId(transaction.getMember() != null ? transaction.getMember().getId() : null)
+                .issuedById(transaction.getIssuedBy() != null ? transaction.getIssuedBy().getId() : null)
+                .returnedToId(transaction.getReturnedTo() != null ? transaction.getReturnedTo().getId() : null)
+                .borrowDate(transaction.getBorrowDate())
+                .dueDate(transaction.getDueDate())
+                .returnDate(transaction.getReturnDate())
+                .fineAmount(transaction.getFineAmount())
+                .status(transaction.getStatus())
+                .notes(transaction.getNotes())
+                .build();
+    }
 }
