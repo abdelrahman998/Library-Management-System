@@ -4,7 +4,7 @@ import com.library.entity.SystemUser;
 import com.library.exception.DuplicateResourceException;
 import com.library.exception.ResourceNotFoundException;
 import com.library.repository.SystemUserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,16 +15,11 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class SystemUserService {
 
     private final SystemUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public SystemUserService(SystemUserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Transactional(readOnly = true)
     public Page<SystemUser> getAllUsers(Pageable pageable) {

@@ -2,7 +2,7 @@ package com.library.controller;
 
 import com.library.entity.Publisher;
 import com.library.service.PublisherService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -12,14 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/publishers")
+@RequiredArgsConstructor
 public class PublisherController {
 
     private final PublisherService publisherService;
-
-    @Autowired
-    public PublisherController(PublisherService publisherService) {
-        this.publisherService = publisherService;
-    }
 
     // Get all publishers with pagination
     @GetMapping

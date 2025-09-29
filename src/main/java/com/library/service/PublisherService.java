@@ -3,7 +3,7 @@ package com.library.service;
 import com.library.entity.Publisher;
 import com.library.repository.PublisherRepository;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,10 +15,10 @@ import java.util.regex.Pattern;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class PublisherService {
 
-    @Autowired
-    private PublisherRepository publisherRepository;
+    private final PublisherRepository publisherRepository;
 
     // Pattern for basic email validation
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
