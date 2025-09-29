@@ -14,7 +14,6 @@ This project is a Library Management System built with Java, Spring Boot, and a 
 - **Authors**: Manage author information
 - **Publishers**: Track publisher details
 - **Categories**: Organize books by categories
-- **Security**: JWT Authentication and Role-Based Authorization.
 
 ## 🛠️ Tech Stack
 
