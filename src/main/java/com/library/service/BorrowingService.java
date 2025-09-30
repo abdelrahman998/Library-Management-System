@@ -150,13 +150,6 @@ public class BorrowingService {
     }
 
     /**
-     * Get transactions by status with pagination
-     */
-    public Page<BorrowingTransaction> getTransactionsByStatus(BorrowingTransaction.TransactionStatus status, Pageable pageable) {
-        return borrowingRepository.findByStatus(status, pageable);
-    }
-
-    /**
      * Get all overdue transactions
      */
     public List<BorrowingTransaction> getOverdueTransactions() {
@@ -171,40 +164,6 @@ public class BorrowingService {
                 .orElseThrow(() -> new RuntimeException("Member not found with id: " + memberId));
 
         return borrowingRepository.findByMemberAndStatus(member, BorrowingTransaction.TransactionStatus.BORROWED);
-    }
-
-    /**
-     * Get active borrowings for a specific book
-     */
-    public List<BorrowingTransaction> getActiveBorrowingsByBook(Long bookId) {
-        Book book = bookService.getBookById(bookId)
-                .orElseThrow(() -> new RuntimeException("Book not found with id: " + bookId));
-
-        return borrowingRepository.findByBookAndStatus(book, BorrowingTransaction.TransactionStatus.BORROWED);
-    }
-
-    /**
-     * Update transaction details (admin function)
-     */
-    public BorrowingTransaction updateTransaction(Long transactionId, BorrowingTransaction transactionDetails) {
-        BorrowingTransaction transaction = borrowingRepository.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + transactionId));
-
-        // Update allowed fields
-        if (transactionDetails.getDueDate() != null) {
-            transaction.setDueDate(transactionDetails.getDueDate());
-        }
-        if (transactionDetails.getFineAmount() != null) {
-            transaction.setFineAmount(transactionDetails.getFineAmount());
-        }
-        if (transactionDetails.getNotes() != null) {
-            transaction.setNotes(transactionDetails.getNotes());
-        }
-        if (transactionDetails.getStatus() != null) {
-            transaction.setStatus(transactionDetails.getStatus());
-        }
-
-        return borrowingRepository.save(transaction);
     }
 
     /**
@@ -252,47 +211,6 @@ public class BorrowingService {
         book.setTotalCopies(book.getTotalCopies() - 1);
 
         return updatedTransaction;
-    }
-
-    /**
-     * Calculate fine for a transaction
-     */
-    public double calculateFine(Long transactionId) {
-        BorrowingTransaction transaction = borrowingRepository.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("Transaction not found with id: " + transactionId));
-
-        if (transaction.getReturnDate() != null ||
-                transaction.getStatus() == BorrowingTransaction.TransactionStatus.RETURNED) {
-            return transaction.getFineAmount(); // Return existing fine
-        }
-
-        LocalDate today = LocalDate.now();
-        if (today.isAfter(transaction.getDueDate())) {
-            long overdueDays = ChronoUnit.DAYS.between(transaction.getDueDate(), today);
-            return overdueDays * DAILY_FINE_RATE;
-        }
-
-        return 0.0; // No fine if not overdue
-    }
-
-    /**
-     * Update overdue transactions and calculate fines
-     */
-    public int updateOverdueTransactions() {
-        List<BorrowingTransaction> overdueTransactions = getOverdueTransactions();
-        int updateCount = 0;
-
-        for (BorrowingTransaction transaction : overdueTransactions) {
-            if (transaction.getStatus() == BorrowingTransaction.TransactionStatus.BORROWED) {
-                double fine = calculateFine(transaction.getId());
-                transaction.setFineAmount(fine);
-                transaction.setStatus(BorrowingTransaction.TransactionStatus.OVERDUE);
-                borrowingRepository.save(transaction);
-                updateCount++;
-            }
-        }
-
-        return updateCount;
     }
 
     /**
@@ -348,20 +266,6 @@ public class BorrowingService {
 
         Long activeBorrowings = borrowingRepository.countActiveBorrowingsByMember(member);
         return Math.max(0, MAX_BOOKS_PER_MEMBER - activeBorrowings.intValue());
-    }
-
-    /**
-     * Get total active borrowings count
-     */
-    public long getTotalActiveBorrowings() {
-        return borrowingRepository.findByStatus(BorrowingTransaction.TransactionStatus.BORROWED, null).getTotalElements();
-    }
-
-    /**
-     * Get total overdue count
-     */
-    public long getTotalOverdueCount() {
-        return getOverdueTransactions().size();
     }
 
     /**
