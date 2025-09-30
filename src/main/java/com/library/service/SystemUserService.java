@@ -38,12 +38,6 @@ public class SystemUserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
     }
 
-    @Transactional(readOnly = true)
-    public SystemUser getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
-    }
-
     public SystemUser createUser(SystemUser user) {
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new DuplicateResourceException("Username already exists: " + user.getUsername());
@@ -106,20 +100,6 @@ public class SystemUserService {
         return userRepository.findByActiveTrue();
     }
 
-    @Transactional(readOnly = true)
-    public List<SystemUser> findActiveUsersByRoles(List<SystemUser.Role> roles) {
-        return userRepository.findByActiveAndRoleIn(roles);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
 
     public SystemUser deactivateUser(Long id) {
         SystemUser user = userRepository.findById(id)
@@ -133,15 +113,5 @@ public class SystemUserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         user.setActive(true);
         return userRepository.save(user);
-    }
-
-    @Transactional(readOnly = true)
-    public long countUsersByRole(SystemUser.Role role) {
-        return userRepository.countByRole(role);
-    }
-
-    @Transactional(readOnly = true)
-    public long countActiveUsers() {
-        return userRepository.countByActiveTrue();
     }
 }
