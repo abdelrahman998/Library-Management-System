@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,13 +29,6 @@ public class BookService {
      */
     public Optional<Book> getBookById(Long id) {
         return bookRepository.findById(id);
-    }
-
-    /**
-     * Find book by ISBN
-     */
-    public Optional<Book> getBookByIsbn(String isbn) {
-        return bookRepository.findByIsbn(isbn);
     }
 
     /**
@@ -99,47 +91,12 @@ public class BookService {
     public Page<Book> searchBooksByTitle(String title, Pageable pageable) {
         return bookRepository.findByTitleContainingIgnoreCase(title, pageable);
     }
-//
-//    /**
-//     * Search books by author name (case-insensitive)
-//     */
-//    public Page<Book> searchBooksByAuthor(String authorName, Pageable pageable) {
-//        return bookRepository.findByAuthorNameContainingIgnoreCase(authorName, pageable);
-//    }
-//
-//    /**
-//     * Get books by category name
-//     */
-//    public Page<Book> getBooksByCategory(String categoryName, Pageable pageable) {
-//        return bookRepository.findByCategoryName(categoryName, pageable);
-//    }
-//
-//    /**
-//     * Get books by publication year
-//     */
-//    public Page<Book> getBooksByPublicationYear(Integer year, Pageable pageable) {
-//        return bookRepository.findByPublicationYear(year, pageable);
-//    }
-//
-//    /**
-//     * Get books by publisher name
-//     */
-//    public Page<Book> getBooksByPublisher(String publisherName, Pageable pageable) {
-//        return bookRepository.findByPublisherName(publisherName, pageable);
-//    }
 
     /**
      * Get all available books (books with available copies > 0)
      */
     public Page<Book> getAvailableBooks(Pageable pageable) {
         return bookRepository.findAvailableBooks(pageable);
-    }
-
-    /**
-     * Get books by language
-     */
-    public List<Book> getBooksByLanguage(String language) {
-        return bookRepository.findByLanguage(language);
     }
 
     /**
@@ -161,56 +118,6 @@ public class BookService {
 
         book.setAvailableCopies(newAvailableCopies);
         bookRepository.save(book);
-    }
-
-    /**
-     * Check if book exists by ISBN
-     */
-    public boolean existsByIsbn(String isbn) {
-        return bookRepository.existsByIsbn(isbn);
-    }
-
-    /**
-     * Check if book is available for borrowing
-     */
-    public boolean isBookAvailable(Long bookId) {
-        return bookRepository.findById(bookId)
-                .map(Book::isAvailable)
-                .orElse(false);
-    }
-
-    /**
-     * Get total number of books in the library
-     */
-    public long getTotalBookCount() {
-        return bookRepository.count();
-    }
-
-    /**
-     * Get total number of available books
-     */
-    public long getAvailableBookCount() {
-        return bookRepository.findAll().stream()
-                .filter(Book::isAvailable)
-                .count();
-    }
-
-    /**
-     * Get total copies count across all books
-     */
-    public long getTotalCopiesCount() {
-        return bookRepository.findAll().stream()
-                .mapToInt(book -> book.getTotalCopies() != null ? book.getTotalCopies() : 0)
-                .sum();
-    }
-
-    /**
-     * Get total available copies count across all books
-     */
-    public long getAvailableCopiesCount() {
-        return bookRepository.findAll().stream()
-                .mapToInt(book -> book.getAvailableCopies() != null ? book.getAvailableCopies() : 0)
-                .sum();
     }
 
     /**
