@@ -26,7 +26,7 @@ This project is a Library Management System built with Java, Spring Boot, and a 
 1. **Clone and setup**
 
    ```bash  
-   git clone [(https://github.com/abdelrahman998/Library-Management-System.git)]  
+   git clone https://github.com/abdelrahman998/Library-Management-System.git  
    cd Library-Management-System
    ```
 2. **Create the database**
