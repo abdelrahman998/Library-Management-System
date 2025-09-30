@@ -22,14 +22,8 @@ public interface BorrowingTransactionRepository extends JpaRepository<BorrowingT
     // Find all transactions for a book with pagination
     Page<BorrowingTransaction> findByBookId(Long bookId, Pageable pageable);
 
-    // Find transactions by status with pagination
-    Page<BorrowingTransaction> findByStatus(BorrowingTransaction.TransactionStatus status, Pageable pageable);
-
     // Find transactions by member and status
     List<BorrowingTransaction> findByMemberAndStatus(Member member, BorrowingTransaction.TransactionStatus status);
-
-    // Find transactions by book and status
-    List<BorrowingTransaction> findByBookAndStatus(Book book, BorrowingTransaction.TransactionStatus status);
 
     // Count active borrowings for a member
     @Query("SELECT COUNT(b) FROM BorrowingTransaction b WHERE b.member = :member AND b.status = 'BORROWED'")
