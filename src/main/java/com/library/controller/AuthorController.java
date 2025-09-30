@@ -168,8 +168,4 @@ public class AuthorController {
         return ResponseEntity.ok(authorService.getAuthorsByDecade(startYear));
     }
 
-    @GetMapping("/stats")
-    public ResponseEntity<AuthorService.AuthorStats> getAuthorStatistics() {
-        return ResponseEntity.ok(authorService.getAuthorStatistics());
-    }
 }

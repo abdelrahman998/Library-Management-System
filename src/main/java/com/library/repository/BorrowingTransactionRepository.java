@@ -39,11 +39,4 @@ public interface BorrowingTransactionRepository extends JpaRepository<BorrowingT
     @Query("SELECT b FROM BorrowingTransaction b WHERE b.dueDate < :currentDate AND b.status = 'BORROWED'")
     List<BorrowingTransaction> findOverdueTransactions(@Param("currentDate") LocalDate currentDate);
 
-    // Additional query to find active borrowings by member (alternative to the count method)
-    @Query("SELECT b FROM BorrowingTransaction b WHERE b.member = :member AND b.status = 'BORROWED'")
-    List<BorrowingTransaction> findActiveBorrowingsByMember(@Param("member") Member member);
-
-    // Find active borrowings by book
-    @Query("SELECT b FROM BorrowingTransaction b WHERE b.book = :book AND b.status = 'BORROWED'")
-    List<BorrowingTransaction> findActiveBorrowingsByBook(@Param("book") Book book);
 }

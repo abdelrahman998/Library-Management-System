@@ -3,7 +3,6 @@ package com.library.service;
 import com.library.entity.Author;
 import com.library.repository.AuthorRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -251,38 +250,6 @@ public class AuthorService {
         return getAuthorsBornBetween(startDate, endDate);
     }
 
-    /**
-     * Get author statistics
-     */
-    public AuthorStats getAuthorStatistics() {
-        List<Author> allAuthors = authorRepository.findAll();
-
-        long totalAuthors = allAuthors.size();
-        long livingAuthors = getLivingAuthorCount();
-        long deceasedAuthors = totalAuthors - livingAuthors;
-
-        // Calculate average age of living authors
-        double avgAgeLiving = allAuthors.stream()
-                .filter(author -> author.getBirthDate() != null && author.getDeathDate() == null)
-                .mapToInt(author -> Period.between(author.getBirthDate(), LocalDate.now()).getYears())
-                .average()
-                .orElse(0.0);
-
-        // Get most common nationality
-        String mostCommonNationality = allAuthors.stream()
-                .map(Author::getNationality)
-                .filter(nat -> nat != null && !nat.trim().isEmpty())
-                .collect(java.util.stream.Collectors.groupingBy(
-                        java.util.function.Function.identity(),
-                        java.util.stream.Collectors.counting()))
-                .entrySet()
-                .stream()
-                .max(java.util.Map.Entry.comparingByValue())
-                .map(java.util.Map.Entry::getKey)
-                .orElse("Unknown");
-
-        return new AuthorStats(totalAuthors, livingAuthors, deceasedAuthors, avgAgeLiving, mostCommonNationality);
-    }
 
     /**
      * Validate author data
