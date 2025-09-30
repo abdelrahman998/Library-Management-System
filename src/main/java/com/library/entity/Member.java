@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -20,13 +21,13 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Member {
+public class Member implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
-    @Column(unique = true)
+    @Column(unique = true, updatable = false)
     private String membershipId;
 
     @NotBlank
@@ -57,6 +58,13 @@ public class Member {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.membershipId == null) {
+            this.membershipId = "M" + String.format("%05d", (int)(Math.random() * 100000));
+        }
+    }
 
     public String getFullName() {
         return firstName + " " + lastName;
