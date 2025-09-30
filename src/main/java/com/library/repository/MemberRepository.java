@@ -25,20 +25,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     // Find members by status
     List<Member> findByStatus(MembershipStatus status);
     
-    // Find members with expiring memberships
-    List<Member> findByMembershipExpiryBetween(LocalDate startDate, LocalDate endDate);
-    
     // Find members with expired memberships (before current date)
     List<Member> findByMembershipExpiryBefore(LocalDate date);
     
     // Search members by name (first or last name contains the given string, case-insensitive)
     @Query("SELECT m FROM Member m WHERE LOWER(m.firstName) LIKE LOWER(concat('%', :name, '%')) OR LOWER(m.lastName) LIKE LOWER(concat('%', :name, '%'))")
     Page<Member> findByNameContainingIgnoreCase(@Param("name") String name, Pageable pageable);
-    
-    // Find members with active status (convenience method)
-    default List<Member> findActiveMembers() {
-        return findByStatus(MembershipStatus.ACTIVE);
-    }
     
     // Check if a member with the given email exists (for validation)
     boolean existsByEmail(String email);
