@@ -152,21 +152,6 @@ public class CategoryService {
     }
 
     /**
-     * Get all descendants of a category
-     */
-    public List<Category> getAllDescendants(Long categoryId) {
-        List<Category> descendants = new ArrayList<>();
-        List<Category> directChildren = getSubcategories(categoryId);
-
-        for (Category child : directChildren) {
-            descendants.add(child);
-            descendants.addAll(getAllDescendants(child.getId()));
-        }
-
-        return descendants;
-    }
-
-    /**
      * Get category depth level
      */
     public int getCategoryDepth(Long categoryId) {
@@ -194,15 +179,6 @@ public class CategoryService {
     }
 
     /**
-     * Get categories by depth level
-     */
-    public List<Category> getCategoriesByDepth(int depth) {
-        return getAllCategories().stream()
-                .filter(category -> getCategoryDepth(category.getId()) == depth)
-                .collect(Collectors.toList());
-    }
-
-    /**
      * Get leaf categories (categories with no children)
      */
     public List<Category> getLeafCategories() {
@@ -217,15 +193,6 @@ public class CategoryService {
     public List<Category> getCategoriesWithBooks() {
         return getAllCategories().stream()
                 .filter(category -> category.getBooks() != null && !category.getBooks().isEmpty())
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Get categories without books
-     */
-    public List<Category> getCategoriesWithoutBooks() {
-        return getAllCategories().stream()
-                .filter(category -> category.getBooks() == null || category.getBooks().isEmpty())
                 .collect(Collectors.toList());
     }
 
@@ -262,13 +229,6 @@ public class CategoryService {
 
         return new CategoryStats(totalCategories, rootCategories, leafCategories,
                 categoriesWithBooks, maxDepth, avgBooksPerCategory);
-    }
-
-    /**
-     * Check if category name exists
-     */
-    public boolean existsByName(String name) {
-        return categoryRepository.existsByName(name);
     }
 
     /**
@@ -330,39 +290,6 @@ public class CategoryService {
                 .collect(Collectors.toList());
 
         return new CategoryTree(category, childTrees);
-    }
-
-    /**
-     * Get categories sorted by book count
-     */
-    public List<Category> getCategoriesSortedByBookCount() {
-        return getAllCategories().stream()
-                .sorted((c1, c2) -> {
-                    int count1 = c1.getBooks() != null ? c1.getBooks().size() : 0;
-                    int count2 = c2.getBooks() != null ? c2.getBooks().size() : 0;
-                    return Integer.compare(count2, count1); // Descending order
-                })
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Reorganize categories by moving all children of a deleted category to its parent
-     */
-    public void reorganizeCategoriesOnDeletion(Long categoryId) {
-        Category categoryToDelete = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + categoryId));
-
-        List<Category> children = getSubcategories(categoryId);
-        Category parentCategory = categoryToDelete.getParentCategory();
-
-        // Move all children to the parent of the category being deleted
-        for (Category child : children) {
-            child.setParentCategory(parentCategory);
-            categoryRepository.save(child);
-        }
-
-        // Now safe to delete the category
-        categoryRepository.delete(categoryToDelete);
     }
 
     /**
